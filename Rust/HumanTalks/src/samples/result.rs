@@ -2,14 +2,15 @@ use std::error::Error;
 
 pub fn result() {
     match step1() {
-        Ok(t) => println!("Step2 worked"),
-        _ => println!("Step2 failed"),
+        Ok(t) => println!("Step1 worked"),
+        _ => println!("Step1 failed"),
     }
 //    let result_panic = panic().unwrap(); // bad example causes panic
 }
 
 fn step1() -> Result<(), Box<dyn Error>> {
-    let _res_step2 = step2()?;
+    let res_step2 = step2()?;
+    println!("Step2 result: {}", res_step2);
     Ok(())
 }
 
