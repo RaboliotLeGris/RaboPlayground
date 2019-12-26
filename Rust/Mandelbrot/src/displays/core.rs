@@ -16,7 +16,6 @@ impl Core {
         let image_x: usize = ((X2 - X1) * ZOOM) as u32 as usize;
         let image_y: usize = ((Y2 - Y1) * ZOOM) as u32 as usize;
 
-        println!("given size: {}x{}={}", image_x, image_y, image_x * image_y);
         let mut buffer: Vec<[u8; 3]> = vec![[0, 0, 0]; (image_x * image_y) as usize];
 
         for x in 0..image_x {
