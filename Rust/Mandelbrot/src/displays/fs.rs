@@ -19,14 +19,12 @@ impl Display for Fs {
         if let Ok(buffer) = Core::mandelbrot() {
             let image = image::ImageBuffer::from_fn(image_x, image_y, |x, y| {
                 let pixel: &[u8; 3] = buffer.get( (y * image_x + x) as usize).unwrap();
-                println!("RGB {:?}", pixel);
                 let red = pixel[0];
                 let green = pixel[1];
                 let blue = pixel[2];
                 image::Rgb([red, green, blue])
             });
             image.save("mandelbrot.png").unwrap();
-            println!("writing succeeded!");
         }
     }
 }

@@ -9,7 +9,7 @@ use displays::live::Live;
 use displays::core::Display;
 
 fn main() {
-//    Fs::show();
+    Fs::show();
     Live::show();
 }
 
