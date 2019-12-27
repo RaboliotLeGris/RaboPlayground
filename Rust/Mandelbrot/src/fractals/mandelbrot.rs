@@ -1,6 +1,6 @@
-use std::error::Error;
+use crate::fractals::traits::FractalGenerator;
 
-pub struct Core {}
+pub struct Mandelbrot {}
 
 const X1: f32 = -2.1;
 const X2: f32 = 0.6;
@@ -8,9 +8,15 @@ const Y1: f32 = -1.2;
 const Y2: f32 = 1.2;
 
 const MAX_ITERATION: i32 = 250;
+impl Mandelbrot {
+    pub fn new() -> Box<Mandelbrot> {
+        Box::new(Mandelbrot{})
+    }
+}
 
-impl Core {
-    pub fn mandelbrot(width: u32, height: u32) -> Result<Vec<[u8; 3]>, Box<dyn Error>> {
+
+impl FractalGenerator for Mandelbrot {
+    fn generate(&self, width: usize, height: usize) -> Vec<[u8;3]> {
         let zoom_x: f32 = width as f32 / (X2 - X1);
         let zoom_y: f32 = height as f32 / (Y2 - Y1);
 
@@ -38,12 +44,6 @@ impl Core {
                 }
             }
         }
-
-        Ok(buffer)
+        buffer
     }
-}
-
-// Display part
-pub trait Display {
-    fn show(width: usize, height: usize);
 }

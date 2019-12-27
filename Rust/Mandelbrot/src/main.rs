@@ -1,14 +1,12 @@
-mod displays {
-    pub mod core;
-    pub mod fs;
-    pub mod live;
-}
+pub mod displays;
+pub mod fractals ;
 
 use std::env;
 
 use displays::fs::Fs;
 use displays::live::Live;
-use displays::core::Display;
+use displays::traits::Display;
+use fractals::mandelbrot::Mandelbrot;
 
 const DEFAULT_SIZE: usize = 500;
 
@@ -21,6 +19,8 @@ fn print_help() {
 }
 
 fn main() {
+    let fractal_generator = Mandelbrot::new();
+
     let args: Vec<String> = env::args().collect();
     if args.len() <= 4 {
         let first_args = match args.get(1) {
@@ -29,9 +29,9 @@ fn main() {
         };
         match first_args.as_ref() {
             "-h" => print_help(),
-            "-l" => Live::show(atoi(&args, 2), atoi(&args, 3)),
-            "-f" => Fs::show(atoi(&args, 2), atoi(&args, 3)),
-            _ => Live::show(atoi(&args, 1), atoi(&args, 2))
+            "-l" => Live::show(atoi(&args, 2), atoi(&args, 3), fractal_generator),
+            "-f" => Fs::show(atoi(&args, 2), atoi(&args, 3), fractal_generator),
+            _ => Live::show(atoi(&args, 1), atoi(&args, 2), fractal_generator)
         };
     } else {
         print_help();

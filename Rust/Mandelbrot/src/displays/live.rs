@@ -1,7 +1,9 @@
 extern crate minifb;
 
 use minifb::{Key, Window, WindowOptions};
-use super::core::{Display, Core};
+use crate::fractals::traits::FractalGenerator;
+use crate::displays::traits::Display;
+
 
 pub struct Live {}
 
@@ -13,7 +15,7 @@ impl Live {
 }
 
 impl Display for Live {
-    fn show(width: usize, height: usize) {
+    fn show(width: usize, height: usize, fractal_generator: Box<dyn FractalGenerator>) {
         let mut buffer: Vec<u32> = vec![0; width * height];
 
         let mut window = Window::new(
@@ -28,7 +30,7 @@ impl Display for Live {
         window.limit_update_rate(Some(std::time::Duration::from_secs(1)));
 
         while window.is_open() && !window.is_key_down(Key::Escape) {
-            let res_buffer = Core::mandelbrot(width as u32, height as u32).unwrap();
+            let res_buffer = fractal_generator.generate(width, height);
 
             for (length, item) in res_buffer.iter().enumerate() {
                 buffer[length] = Live::from_u8_rgba(item[0], item[1], item[2], 255)
