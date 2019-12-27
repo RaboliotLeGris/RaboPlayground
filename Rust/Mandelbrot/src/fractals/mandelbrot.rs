@@ -7,7 +7,7 @@ const X2: f32 = 0.6;
 const Y1: f32 = -1.2;
 const Y2: f32 = 1.2;
 
-const MAX_ITERATION: i32 = 250;
+const MAX_ITERATION: i32 = 100;
 impl Mandelbrot {
     pub fn new() -> Box<Mandelbrot> {
         Box::new(Mandelbrot{})
@@ -21,6 +21,9 @@ impl FractalGenerator for Mandelbrot {
         let zoom_y: f32 = height as f32 / (Y2 - Y1);
 
         let mut buffer: Vec<[u8; 3]> = vec![[0, 0, 0]; (width * height) as usize];
+
+        let color_scale = 255.0 / MAX_ITERATION as f32;
+        let colors = (0..MAX_ITERATION).map(|x| (x as f32 * color_scale) as u8).collect::<Vec<u8>>();
 
         for x in 0..width {
             for y in 0..height {
@@ -40,7 +43,9 @@ impl FractalGenerator for Mandelbrot {
                 } {}
 
                 if i == MAX_ITERATION {
-                    std::mem::replace(&mut buffer[(y * width + x) as usize], [255, 255, 255]);
+                    std::mem::replace(&mut buffer[(y * width + x) as usize], [0, 0, 0]);
+                } else {
+                    std::mem::replace(&mut buffer[(y * width + x) as usize], [0, colors[i as usize], 0]);
                 }
             }
         }
