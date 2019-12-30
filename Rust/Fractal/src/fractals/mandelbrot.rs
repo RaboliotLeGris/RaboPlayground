@@ -26,9 +26,7 @@ impl FractalGenerator for Mandelbrot {
         let zoom_y: f32 = height as f32 / (self.lower_bound - self.upper_bound);
 
         let mut buffer: Vec<[u8; 3]> = vec![[0, 0, 0]; (width * height) as usize];
-
-        let color_scale = 255.0 / self.max_iteration as f32;
-        let colors = (0..self.max_iteration).map(|x| (x as f32 * color_scale) as u8).collect::<Vec<u8>>();
+        let colors = self.get_colors();
 
         for x in 0..width {
             for y in 0..height {
@@ -53,5 +51,9 @@ impl FractalGenerator for Mandelbrot {
             }
         }
         buffer
+    }
+
+    fn max_iteration(&self) -> i32 {
+        self.max_iteration
     }
 }
