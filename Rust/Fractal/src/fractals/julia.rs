@@ -1,4 +1,5 @@
 use crate::fractals::traits::FractalGenerator;
+use crate::fractals::zoom::Zoom;
 
 pub struct Julia {
     max_iteration: i32,
@@ -21,12 +22,12 @@ impl Julia {
 }
 
 impl FractalGenerator for Julia {
-    fn generate(&self, width: usize, height: usize) -> Vec<[u8; 3]> {
+    fn generate(&self, width: usize, height: usize, zoom_location: Option<&Zoom>) -> Vec<[u8; 3]> {
         let zoom_x: f32 = width as f32 / (self.right_bound - self.left_bound);
         let zoom_y: f32 = height as f32 / (self.lower_bound - self.upper_bound);
 
         let mut buffer: Vec<[u8; 3]> = vec![[0, 0, 0]; (width * height) as usize];
-        let colors = self.get_colors();
+        let colors = self.get_colors(&(self.max_iteration as f32));
 
         for x in 0..width {
             for y in 0..height {
@@ -55,7 +56,8 @@ impl FractalGenerator for Julia {
         buffer
     }
 
-    fn max_iteration(&self) -> i32 {
-        self.max_iteration
+    fn get_colors(&self, iteration_number: &f32) -> Vec<u8> {
+        let color_scale = 255.0 / self.max_iteration as f32;
+        (0..self.max_iteration).map(|x| (x as f32 * color_scale) as u8).collect::<Vec<u8>>()
     }
 }

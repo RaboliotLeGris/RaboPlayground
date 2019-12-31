@@ -20,7 +20,7 @@ fn print_help() {
 }
 
 fn main() {
-    let fractal_generator = Julia::new();
+    let fractal_generator = Mandelbrot::new();
 
     let args: Vec<String> = env::args().collect();
     if args.len() <= 4 {

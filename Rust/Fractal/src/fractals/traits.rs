@@ -1,9 +1,7 @@
-pub trait FractalGenerator {
-    fn generate(&self, width: usize, height: usize) -> Vec<[u8;3]>;
-    fn max_iteration(&self) -> i32;
+use crate::fractals::zoom::Zoom;
 
-    fn get_colors(&self) -> Vec<u8> {
-        let color_scale = 255.0 / self.max_iteration() as f32;
-        (0..self.max_iteration()).map(|x| (x as f32 * color_scale) as u8).collect::<Vec<u8>>()
-    }
+pub trait FractalGenerator {
+    fn generate(&self, width: usize, height: usize, zoom_location: Option<&Zoom>) -> Vec<[u8;3]>;
+
+    fn get_colors(&self, iteration_number: &f32) -> Vec<u8>;
 }
