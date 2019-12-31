@@ -1,5 +1,4 @@
 ## TODO
-* Live generatation -> only generate when it's needed
 * add zoom
 * add buddahbrot
 
