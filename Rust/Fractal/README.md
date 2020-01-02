@@ -1,10 +1,9 @@
-## TODO
-* add zoom
-* add buddahbrot
-
 ## SRC:
 * http://sdz.tdct.org/sdz/dessiner-la-fractale-de-mandelbrot.html
 * https://en.wikipedia.org/wiki/Mandelbrot_set
+
+## Zoom
+It's in an WIP branch, it sort of works but it's distorded on the edge, certainly an issue with my algorithm
 
 ## Interesting location for mandelbrot
 ````rust

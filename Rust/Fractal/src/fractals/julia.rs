@@ -24,7 +24,10 @@ impl FractalGenerator for Julia {
         let color_scale = 255.0 / MAX_ITERATION as f32;
         let colors = (0..MAX_ITERATION).map(|x| (x as f32 * color_scale) as u8).collect::<Vec<u8>>();
 
+        let mut previous_percent = 0;
         for x in 0..width {
+            let percent: u32 = ((x as f32 / width as f32) * 100.0) as u32;
+            if percent != previous_percent && percent % 10 == 0 { println!("Generation progress: {}", percent); previous_percent = percent; }
             for y in 0..height {
                 let c_r: f32 = 0.285;
                 let c_i: f32 = 0.01;
@@ -44,6 +47,7 @@ impl FractalGenerator for Julia {
                 }
             }
         }
+        println!("Generation DONE");
 
         buffer
     }

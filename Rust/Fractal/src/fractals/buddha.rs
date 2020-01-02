@@ -10,7 +10,7 @@ impl Buddha {
     }
 }
 
-const MAX_ITERATION: u32 = 50000;
+const MAX_ITERATION: u32 = 10000;
 const LEFT_BOUND: f32 = -2.1;
 const RIGHT_BOUND: f32 = 0.6;
 const UPPER_BOUND: f32 = -1.2;
@@ -23,7 +23,10 @@ impl FractalGenerator for Buddha {
 
         let mut buffer: Vec<[u8; 3]> = vec![[0, 0, 0]; (width * height) as usize];
 
+        let mut previous_percent = 0;
         for x in 0..width {
+            let percent: u32 = ((x as f32 / width as f32) * 100.0) as u32;
+            if percent != previous_percent && percent % 10 == 0 { println!("Generation progress: {}", percent); previous_percent = percent; }
             for y in 0..height {
                 let c_r: f32 = x as i32 as f32 / zoom_x + LEFT_BOUND;
                 let c_i: f32 = y as i32 as f32 / zoom_y + UPPER_BOUND;
@@ -58,6 +61,7 @@ impl FractalGenerator for Buddha {
             let min_value = min(buffer[pos][0], 255);
             std::mem::replace(&mut buffer[pos], [min_value, min_value, min_value]);
         }
+        println!("Generation DONE");
 
         buffer
     }

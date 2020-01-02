@@ -3,12 +3,13 @@ pub mod fractals ;
 
 use std::env;
 
-use displays::fs::Fs;
-use displays::live::Live;
-use displays::traits::Display;
-use fractals::mandelbrot::Mandelbrot;
-use fractals::julia::Julia;
-use fractals::buddha::Buddha;
+use displays::{
+    fs::Fs,
+    live::Live,
+    traits::Display
+};
+
+use crate::fractals::FractalFactory;
 
 const DEFAULT_SIZE: usize = 1000;
 
@@ -21,19 +22,17 @@ fn print_help() {
 }
 
 fn main() {
-    let fractal_generator = Buddha::new();
-
     let args: Vec<String> = env::args().collect();
-    if args.len() <= 4 {
+    if args.len() <= 5 {
         let first_args = match args.get(1) {
             Some(s) => s,
             _ => ""
         };
         match first_args.as_ref() {
             "-h" => print_help(),
-            "-l" => Live::show(atoi(&args, 2), atoi(&args, 3), fractal_generator),
-            "-f" => Fs::show(atoi(&args, 2), atoi(&args, 3), fractal_generator),
-            _ => Live::show(atoi(&args, 1), atoi(&args, 2), fractal_generator)
+            "-l" => Live::show(atoi(&args, 3), atoi(&args, 3), FractalFactory::make(args.get(2))),
+            "-f" => Fs::show(atoi(&args, 3), atoi(&args, 3), FractalFactory::make(args.get(2))),
+            _ => Live::show(atoi(&args, 2), atoi(&args, 2), FractalFactory::make(args.get(1)))
         };
     } else {
         print_help();
