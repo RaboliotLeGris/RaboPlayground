@@ -8,6 +8,7 @@ use displays::live::Live;
 use displays::traits::Display;
 use fractals::mandelbrot::Mandelbrot;
 use fractals::julia::Julia;
+use fractals::buddha::Buddha;
 
 const DEFAULT_SIZE: usize = 1000;
 
@@ -20,7 +21,7 @@ fn print_help() {
 }
 
 fn main() {
-    let fractal_generator = Julia::new();
+    let fractal_generator = Buddha::new();
 
     let args: Vec<String> = env::args().collect();
     if args.len() <= 4 {
