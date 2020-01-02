@@ -29,11 +29,14 @@ impl Display for Live {
 
         window.limit_update_rate(Some(std::time::Duration::from_secs(1)));
 
+        let mut update_is_needed: bool = true;
         while window.is_open() && !window.is_key_down(Key::Escape) {
-            let res_buffer = fractal_generator.generate(width, height);
-
-            for (length, item) in res_buffer.iter().enumerate() {
-                buffer[length] = Live::from_u8_rgba(item[0], item[1], item[2], 255)
+            if update_is_needed {
+                let res_buffer = fractal_generator.generate(width, height);
+                for (length, item) in res_buffer.iter().enumerate() {
+                    buffer[length] = Live::from_u8_rgba(item[0], item[1], item[2], 255);
+                    update_is_needed = false;
+                }
             }
 
             window
