@@ -23,9 +23,6 @@ impl FractalGenerator for Buddha {
 
         let mut buffer: Vec<[u8; 3]> = vec![[0, 0, 0]; (width * height) as usize];
 
-        let color_scale = 255.0 / MAX_ITERATION as f32;
-        let colors = (0..MAX_ITERATION).map(|x| (x as f32 * color_scale) as u8).collect::<Vec<u8>>();
-
         for x in 0..width {
             for y in 0..height {
                 let c_r: f32 = x as i32 as f32 / zoom_x + LEFT_BOUND;
@@ -46,7 +43,7 @@ impl FractalGenerator for Buddha {
                 if i != MAX_ITERATION {
                     for pixel in tmp_pixels {
                         if pixel[0] < std::usize::MAX as u32 && pixel[1] < std::usize::MAX as u32 {
-                            let mut pos = (pixel[1] as usize).saturating_mul(width as usize).saturating_add(pixel[0] as usize);
+                            let pos = (pixel[1] as usize).saturating_mul(width as usize).saturating_add(pixel[0] as usize);
                             if let Some(buffer_value) = buffer.get(pos) {
                                 let updated_value = [buffer_value[0].saturating_add(1), 0, 0];
                                 std::mem::replace(&mut buffer[pos], updated_value);
@@ -57,9 +54,9 @@ impl FractalGenerator for Buddha {
             }
         }
 
-        for i in 0..width * height {
-            let min_value = min(buffer[i][0], 255);
-            std::mem::replace(&mut buffer[i], [min_value, min_value, min_value]);
+        for pos in 0..width * height {
+            let min_value = min(buffer[pos][0], 255);
+            std::mem::replace(&mut buffer[pos], [min_value, min_value, min_value]);
         }
 
         buffer
