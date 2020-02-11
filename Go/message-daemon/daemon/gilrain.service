@@ -1,0 +1,28 @@
+[Unit]
+Description=Gilrain message service
+ConditionPathExists=/tmp/gilrain/gilrain
+After=network.target
+ 
+[Service]
+Type=simple
+User=gilrain
+Group=gilrain
+LimitNOFILE=1024
+
+Restart=on-failure
+RestartSec=10
+startLimitIntervalSec=60
+
+WorkingDirectory=/tmp/gilrain/
+ExecStart=/tmp/gilrain/gilrain --name=foo
+
+# make sure log directory exists and owned by syslog
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/gilrain
+ExecStartPre=/bin/chmod 755 /var/log/gilrain
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=gilrain
+ 
+[Install]
+WantedBy=multi-user.target
