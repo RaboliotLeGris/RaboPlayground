@@ -5,7 +5,6 @@
 - [x] CLI
 - [x] Wasm
 - [x] Desktop app *(sort of)*
-- [ ] Functional programming
 - [ ] Web
 - [ ] Concurrency
 - [ ] Async
