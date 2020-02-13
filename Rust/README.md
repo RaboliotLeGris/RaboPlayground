@@ -5,7 +5,7 @@
 - [x] CLI
 - [x] Wasm
 - [x] Desktop app *(sort of)*
-- [ ] Web
+- [ ] Web (I'm really not convinced by the existing stack ...)
 - [ ] Concurrency
 - [ ] Async
 - [ ] Embedded
