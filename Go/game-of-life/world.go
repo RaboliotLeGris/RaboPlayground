@@ -9,10 +9,9 @@ type World struct {
 	grid []int
 	w    int
 	h    int
-	it   int
 }
 
-func NewWorld(w int, h int) World {
+func NewWorld(w, h int) World {
 	grid := make([]int, w*h)
 	for i := range grid {
 		grid[i] = genCell()
@@ -22,7 +21,14 @@ func NewWorld(w int, h int) World {
 		grid: grid,
 		w:    w,
 		h:    h,
-		it:   0,
+	}
+}
+
+func NewWorldFromGrid(grid []int, w, h int) World {
+	return World{
+		grid: grid,
+		w:    w,
+		h:    h,
 	}
 }
 
@@ -43,18 +49,20 @@ func (w *World) Print() string {
 }
 
 func (w *World) Simulate() {
+	nGrid := make([]int, w.w * w.h);
 	for i, k := range w.grid {
 		x := i % w.w
 		y := i / w.w
 		nbNeighbour := w.countNeighbour(x, y)
 		if k == 1 && (nbNeighbour == 2 || nbNeighbour == 3) {
-			w.grid[i] = 1
+			nGrid[i] = 1
 		} else if k == 1 && (nbNeighbour < 2 || nbNeighbour > 3) {
-			w.grid[i] = 0
+			nGrid[i] = 0
 		} else if k == 0 && nbNeighbour == 3 {
-			w.grid[i] = 1
+			nGrid[i] = 1
 		}
 	}
+	w.grid = nGrid
 }
 
 func (w *World) countNeighbour(x, y int) int {
