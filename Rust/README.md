@@ -5,7 +5,7 @@
 - [x] CLI
 - [x] Wasm
 - [x] Desktop app *(sort of)*
-- [ ] Macros
+- [X] Macros
 - [ ] Concurrency
 - [ ] Async
 
