@@ -1,25 +1,25 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
+extern crate nanoid;
 #[macro_use]
 extern crate rocket;
-#[macro_use]
 extern crate rocket_contrib;
 extern crate serde_json;
 
+use std::ffi::OsStr;
+use std::fs::File;
 use std::io;
+use std::io::{Error, Write};
 use std::path::Path;
 
+use nanoid::nanoid;
 use rocket::Data;
-use rocket::response::{NamedFile, Debug, content::Json};
 use rocket::http::ContentType;
-use rocket_contrib::serve::StaticFiles;
+use rocket::response::{Debug, NamedFile};
 use rocket_contrib::json;
 use rocket_contrib::json::JsonValue;
-
-use rocket_multipart_form_data::{mime, MultipartFormDataOptions, MultipartFormData, MultipartFormDataField, Repetition, FileField, TextField, RawField, MultipartFormDataError};
-use std::io::{Error, Write};
-use std::fs::File;
-use std::ffi::OsStr;
+use rocket_contrib::serve::StaticFiles;
+use rocket_multipart_form_data::{mime, MultipartFormData, MultipartFormDataError, MultipartFormDataField, MultipartFormDataOptions, RawField};
 
 #[get("/<filename>")]
 fn get_img(filename: String) -> Result<NamedFile, io::Error> {
@@ -56,13 +56,10 @@ fn post_img(content_type: &ContentType, data: Data) -> Result<JsonValue, Debug<i
         Some(image) => {
             match image {
                 RawField::Single(raw) => {
-                    let data = raw.raw;
-
-                    // TODO: generate id
                     // TODO: return template html with image & link to this image
-                    let id = "To_generate";
+                    let id = nanoid!(10);
                     let mut file = File::create(format!("uploaded/{}.{}", id, get_extension(&raw.file_name)))?;
-                    file.write_all(&data)?;
+                    file.write_all(&raw.raw)?;
                 }
                 RawField::Multiple(_) => unreachable!(),
             }
@@ -77,11 +74,12 @@ fn post_img(content_type: &ContentType, data: Data) -> Result<JsonValue, Debug<i
 
 fn get_extension(filename: &Option<String>) -> String {
     match filename {
-        Some(S) => {
-            if let Some(Os_Filename) = Path::new(&S).extension().and_then(OsStr::to_str) {
-                String::from(Os_Filename)
+        Some(s) => {
+            if let Some(os_filename) = Path::new(&s).extension().and_then(OsStr::to_str) {
+                String::from(os_filename)
+            } else {
+                String::from("bin")
             }
-            String::from("bin")
         }
         None => String::from("bin")
     }

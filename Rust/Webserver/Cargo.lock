@@ -4,6 +4,7 @@
 name = "Webserver"
 version = "0.1.0"
 dependencies = [
+ "nanoid",
  "rocket",
  "rocket-multipart-form-data",
  "rocket_contrib",
@@ -473,6 +474,15 @@ dependencies = [
  "safemem",
  "tempfile",
  "twoway",
+]
+
+[[package]]
+name = "nanoid"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a6226bc4e142124cb44e309a37a04cd9bb10e740d8642855441d3b14808f635e"
+dependencies = [
+ "rand 0.6.5",
 ]
 
 [[package]]
