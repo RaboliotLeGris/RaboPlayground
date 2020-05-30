@@ -16,4 +16,4 @@ rocket-multipart-form-data = "0.8.1"
 [dependencies.rocket_contrib]
 version = "0.4.4"
 default-features = false
-features = ["json"]
+features = ["json", "serve"]
