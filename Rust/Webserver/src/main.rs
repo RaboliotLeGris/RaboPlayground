@@ -5,6 +5,8 @@ extern crate nanoid;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde_json;
+#[macro_use]
+extern crate serde_derive;
 
 use std::ffi::OsStr;
 use std::fs::File;
@@ -19,6 +21,7 @@ use rocket::response::{Debug, NamedFile};
 use rocket_contrib::json;
 use rocket_contrib::json::JsonValue;
 use rocket_contrib::serve::StaticFiles;
+use rocket_contrib::templates::Template;
 use rocket_multipart_form_data::{mime, MultipartFormData, MultipartFormDataError, MultipartFormDataField, MultipartFormDataOptions, RawField};
 
 #[get("/<filename>")]
@@ -27,9 +30,15 @@ fn get_img(filename: String) -> Result<NamedFile, io::Error> {
     NamedFile::open(path)
 }
 
+#[derive(Serialize)]
+struct UploadTemplateContext {
+    url: String,
+}
+
 #[post("/upload", data = "<data>")]
-fn post_img(content_type: &ContentType, data: Data) -> Result<JsonValue, Debug<io::Error>> {
+fn post_img(content_type: &ContentType, data: Data) -> Result<Template, Debug<io::Error>> {
     let img_field_name = "img";
+    let root_url = "localhost:8000";
 
     let mut options = MultipartFormDataOptions::new();
     options.allowed_fields.push(
@@ -52,13 +61,14 @@ fn post_img(content_type: &ContentType, data: Data) -> Result<JsonValue, Debug<i
     };
 
     let image = multipart_form_data.raw.remove(img_field_name);
+    let mut image_name = String::new();
     match image {
         Some(image) => {
             match image {
                 RawField::Single(raw) => {
-                    // TODO: return template html with image & link to this image
                     let id = nanoid!(10);
-                    let mut file = File::create(format!("uploaded/{}.{}", id, get_extension(&raw.file_name)))?;
+                    image_name = format!("{}.{}", id, get_extension(&raw.file_name));
+                    let mut file = File::create(format!("uploaded/{}",image_name))?;
                     file.write_all(&raw.raw)?;
                 }
                 RawField::Multiple(_) => unreachable!(),
@@ -69,7 +79,8 @@ fn post_img(content_type: &ContentType, data: Data) -> Result<JsonValue, Debug<i
         }
     }
 
-    Ok(json!({ "status": "ok" }))
+    let ctx = UploadTemplateContext{url: format!("http://{}/i/{}", root_url, image_name)};
+    Ok(Template::render("uploaded", &ctx))
 }
 
 fn get_extension(filename: &Option<String>) -> String {
@@ -89,5 +100,6 @@ fn main() {
     rocket::ignite()
         .mount("/", StaticFiles::from("static"))
         .mount("/i", routes![get_img, post_img])
+        .attach(Template::fairing())
         .launch();
 }

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Uploaded img</title>
+  </head>
+  <body>
+      <img src="{{url}}" style="--mt:2rem; --mr:auto; --ml:auto;">
+      <a href="{{url}}" style="--ta:center">{{url}}</a>
+  </body>
+  <footer>
+  </footer>
+</html>
