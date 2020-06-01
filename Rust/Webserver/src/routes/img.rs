@@ -31,9 +31,39 @@ struct UploadTemplateContext {
 fn post_img(content_type: &ContentType, data: Data) -> Result<Template, Debug<io::Error>> {
     let img_field_name = "img";
 
+    let image = get_multipart_field(content_type, data, img_field_name)?;
+
+    let image_name: String;
+    match image {
+        RawField::Single(raw) => {
+            let id = nanoid!(10);
+            image_name = format!("{}.{}", id, get_extension(&raw.file_name));
+            let mut file = File::create(format!("uploaded/{}", image_name))?;
+            file.write_all(&raw.raw)?;
+            let ctx = UploadTemplateContext { url: format!("/i/{}", image_name) };
+            Ok(Template::render("uploaded", &ctx))
+        }
+        RawField::Multiple(_) => unreachable!(),
+    }
+}
+
+fn get_extension(filename: &Option<String>) -> String {
+    match filename {
+        Some(s) => {
+            if let Some(os_filename) = Path::new(&s).extension().and_then(OsStr::to_str) {
+                String::from(os_filename)
+            } else {
+                String::from("bin")
+            }
+        }
+        None => String::from("bin")
+    }
+}
+
+fn get_multipart_field(content_type: &ContentType, data: Data, field_name: &str) -> Result<RawField, Debug<io::Error>> {
     let mut options = MultipartFormDataOptions::new();
     options.allowed_fields.push(
-        MultipartFormDataField::raw(img_field_name).content_type_by_string(Some(mime::IMAGE_STAR)).unwrap(),
+        MultipartFormDataField::raw(field_name).content_type_by_string(Some(mime::IMAGE_STAR)).unwrap(),
     );
 
     let mut multipart_form_data = match MultipartFormData::parse(content_type, data, options) {
@@ -50,39 +80,8 @@ fn post_img(content_type: &ContentType, data: Data) -> Result<Template, Debug<io
             }
         }
     };
-
-    let image = multipart_form_data.raw.remove(img_field_name);
-    let image_name: String;
-    match image {
-        Some(image) => {
-            match image {
-                RawField::Single(raw) => {
-                    let id = nanoid!(10);
-                    image_name = format!("{}.{}", id, get_extension(&raw.file_name));
-                    let mut file = File::create(format!("uploaded/{}", image_name))?;
-                    file.write_all(&raw.raw)?;
-                }
-                RawField::Multiple(_) => unreachable!(),
-            }
-        }
-        None => {
-            panic!("Failed to match payload")
-        }
-    }
-
-    let ctx = UploadTemplateContext { url: format!("/i/{}", image_name) };
-    Ok(Template::render("uploaded", &ctx))
-}
-
-fn get_extension(filename: &Option<String>) -> String {
-    match filename {
-        Some(s) => {
-            if let Some(os_filename) = Path::new(&s).extension().and_then(OsStr::to_str) {
-                String::from(os_filename)
-            } else {
-                String::from("bin")
-            }
-        }
-        None => String::from("bin")
-    }
+    if let Some(field) = multipart_form_data.raw.remove(field_name) {
+        return Ok(field);
+    };
+    Err(Debug::from(Error::new(std::io::ErrorKind::NotFound, "Missing field")))
 }
