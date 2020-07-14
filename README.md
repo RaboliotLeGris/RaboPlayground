@@ -5,6 +5,7 @@
  * Wasm: Test of Rust WASM with an implementation of game of life
  * Webserver: Small webserver that allow to upload a picture and share it
  * HumanTalks: Presentation support for a quick (-10min) introduction to Rust
+ * ReverseShell: Simple reverse shell (that have some a lot of limitations)
 
 ## Javascript:
  * Boite à Marius: Soundboard made with VueJs with quote from the instructor Marius
