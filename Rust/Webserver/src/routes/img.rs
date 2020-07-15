@@ -1,25 +1,25 @@
+use crate::cli;
+
 use std::ffi::OsStr;
 use std::fs::File;
 use std::io;
 use std::io::{Error, Write};
 use std::path::Path;
 
-use rocket::Data;
+use nanoid::nanoid;
+use rocket::{Data, State};
 use rocket::http::ContentType;
 use rocket::response::{Debug, NamedFile};
 use rocket_contrib::templates::Template;
 use rocket_multipart_form_data::{mime, MultipartFormData, MultipartFormDataError, MultipartFormDataField, MultipartFormDataOptions, RawField};
-
-use nanoid::nanoid;
 
 pub fn register_routes(rocket: rocket::Rocket) -> rocket::Rocket {
     rocket.mount("/i", routes![get_img, post_img])
 }
 
 #[get("/<filename>")]
-fn get_img(filename: String) -> Result<NamedFile, io::Error> {
-    let path = Path::new("uploaded/").join(filename);
-    NamedFile::open(path)
+fn get_img(config: State<cli::Config>, filename: String) -> Result<NamedFile, io::Error> {
+    NamedFile::open(Path::new(config.storage_path.as_str()).join(filename))
 }
 
 #[derive(Serialize)]
@@ -28,9 +28,8 @@ struct UploadTemplateContext {
 }
 
 #[post("/upload", data = "<data>")]
-fn post_img(content_type: &ContentType, data: Data) -> Result<Template, Debug<io::Error>> {
+fn post_img(config: State<cli::Config>, content_type: &ContentType, data: Data) -> Result<Template, Debug<io::Error>> {
     let img_field_name = "img";
-
     let image = get_multipart_field(content_type, data, img_field_name)?;
 
     let image_name: String;
@@ -38,9 +37,10 @@ fn post_img(content_type: &ContentType, data: Data) -> Result<Template, Debug<io
         RawField::Single(raw) => {
             let id = nanoid!(10);
             image_name = format!("{}.{}", id, get_extension(&raw.file_name));
-            let mut file = File::create(format!("uploaded/{}", image_name))?;
+
+            let mut file = File::create(Path::new(config.storage_path.as_str()).join(&image_name))?;
             file.write_all(&raw.raw)?;
-            let ctx = UploadTemplateContext { url: format!("/i/{}", image_name) };
+            let ctx = UploadTemplateContext { url: format!("/i/{}", &image_name) };
             Ok(Template::render("uploaded", &ctx))
         }
         RawField::Multiple(_) => unreachable!(),
