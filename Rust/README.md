@@ -6,7 +6,7 @@
 - [x] Wasm
 - [x] Desktop app *(sort of)*
 - [X] Macros
-- [ ] Webserver
+- [X] Webserver
 - [ ] Concurrency
 - [ ] Async
 
